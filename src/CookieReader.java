@@ -11,6 +11,9 @@ import java.util.ArrayList;
 public class CookieReader {
 
     private ArrayList<People> peopleInfo;
+    private String url;
+    Map<String, String> params;
+    Map<String, String> cookies;
 
     public String path;
     public CookieReader(String path) {
@@ -19,9 +22,9 @@ public class CookieReader {
 
     public void run() {
         try {
-            String url = "https://www.google.com/maps/rpc/locationsharing/read";
+            url = "https://www.google.com/maps/rpc/locationsharing/read";
             // Define the parameters map
-            Map<String, String> params = new HashMap<>();
+            params = new HashMap<>();
             params.put("authuser", "2");
             params.put("hl", "en");
             params.put("gl", "us");
@@ -30,7 +33,7 @@ public class CookieReader {
             BufferedReader reader = new BufferedReader(new FileReader(this.path));
             String line = reader.readLine();
             String tempArray[];
-            Map<String, String> cookies = new HashMap<>();
+            cookies = new HashMap<>();
             while (line != null) {
                 if (!line.startsWith("#") && line.length() != 0) {
                     tempArray = line.split("\t");
@@ -40,11 +43,6 @@ public class CookieReader {
                 line = reader.readLine();
             }
             reader.close();
-            // Call the sendGetRequest method and print the result
-            String[] unprocessedData = sendGetRequest(url, params, cookies).split("'");
-            
-            // seperate people's data in 2d array
-            this.peopleInfo = dataToListFormat(unprocessedData);
             
         } catch (Exception e) {
             // Print the exception message
@@ -53,7 +51,17 @@ public class CookieReader {
     }
 
     public ArrayList<People> getPeoples() {
-        return this.peopleInfo;
+        // Call the sendGetRequest method and print the result
+        String[] unprocessedData;
+        try {
+            unprocessedData = sendGetRequest(url, params, cookies).split("'");
+            // seperate people's data in 2d array
+            this.peopleInfo = dataToListFormat(unprocessedData);
+            return this.peopleInfo;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static ArrayList<People> dataToListFormat(String[] unprocessedData) {
@@ -149,6 +157,5 @@ public class CookieReader {
             throw new Exception("GET request failed: " + responseCode);
         }
     }
-
 }
 
