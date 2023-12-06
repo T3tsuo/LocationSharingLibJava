@@ -1,3 +1,7 @@
+.vscode
+bin/cookies.txt
+src/cookies.txt
+
 # Compiled class file
 *.class
 
