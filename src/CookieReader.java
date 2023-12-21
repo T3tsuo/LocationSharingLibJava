@@ -64,7 +64,7 @@ public class CookieReader {
         }
     }
 
-    public static ArrayList<People> dataToListFormat(String[] unprocessedData) {
+    private static ArrayList<People> dataToListFormat(String[] unprocessedData) {
         // split people data
         unprocessedData = unprocessedData[1].split("null,null,null,null,null");
         
@@ -87,19 +87,36 @@ public class CookieReader {
         return peopleInfo;
     }
 
-    public static People findPersonData(String[] tempList, Boolean isUser) {
+    private static People findPersonData(String[] tempList, Boolean isUser) {
+        if (isUser) {
+            try {
+                Double longitude = Double.parseDouble(tempList[tempList.length - 12]);
+                Double latitude = Double.parseDouble(tempList[tempList.length - 13]);
+                return new People("Current user", longitude, latitude);
+            } catch (Exception e) {
+                return null;
+            }
+        }
         for (int i = 0; i < tempList.length; i++) {
-            if (tempList[i].contains("googleusercontent") && !isUser) {
-                return new People(tempList[i + 2], tempList[i + 10], tempList[i + 9]);
-            } else if (isUser) {
-                return new People("CurrentUser", tempList[i + 20], tempList[i + 19]);
+            if (tempList[i].contains("googleusercontent")) {
+                String name = tempList[i + 2];
+                if (!name.matches("^[A-Za-z- ]+")) {
+                    return null;
+                }
+                try {
+                    Double longitude = Double.parseDouble(tempList[i + 10]);
+                    Double latitude = Double.parseDouble(tempList[i + 9]);
+                    return new People(name, longitude, latitude);
+                } catch (Exception e) {
+                    return null;
+                }
             }
         }
         return null;
     }
 
     // Define a method to send a GET request and return the response as a string
-    public static String sendGetRequest(String url, Map<String, String> params, Map<String, String> cookies) throws Exception {
+    private static String sendGetRequest(String url, Map<String, String> params, Map<String, String> cookies) throws Exception {
         // Build the query string from the parameters map
         StringBuilder query = new StringBuilder();
         for (Map.Entry<String, String> entry : params.entrySet()) {

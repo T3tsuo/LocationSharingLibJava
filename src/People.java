@@ -4,9 +4,9 @@ public class People {
     private String name;
     private Point coordPoint;
 
-    public People(String name, String longitude, String latitude) {
+    public People(String name, Double longitude, Double latitude) {
         this.name = name;
-        this.coordPoint = new Point(Double.parseDouble(longitude), Double.parseDouble(latitude));
+        this.coordPoint = new Point(longitude, latitude);
     }
 
     public String getName() {
